@@ -1,5 +1,6 @@
 <?php
 
+use App\Jobs\ProcessPodcastUrl;
 use App\Models\Episode;
 use App\Models\ListeningParty;
 use Livewire\Volt\Component;
@@ -15,8 +16,7 @@ new class extends Component {
     #[Validate('required')]
     public $startTime;
 
-
-    public function createListeningParty(): void
+    public function createListeningParty()
     {
         $this->validate();
 
@@ -29,6 +29,10 @@ new class extends Component {
             'name' => $this->name,
             'start_time' => $this->startTime,
         ]);
+
+        ProcessPodcastUrl::dispatch($this->mediaURL, $listeningParty, $episode);
+
+        return redirect()->route('parties.show', $listeningParty);
     }
 
     public function with(): array
