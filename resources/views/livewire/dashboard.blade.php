@@ -1,16 +1,34 @@
 <?php
 
+use App\Models\Episode;
 use App\Models\ListeningParty;
 use Livewire\Volt\Component;
+use Livewire\Attributes\Validate;
 
 new class extends Component {
+    #[Validate('required|string|max:255')]
     public string $name = '';
+
+    #[Validate('required|url')]
+    public string $mediaURL = '';
+
+    #[Validate('required')]
     public $startTime;
 
 
-    public function createListeningParty()
+    public function createListeningParty(): void
     {
+        $this->validate();
 
+        $episode = Episode::create([
+            'mediaURL' => $this->mediaURL,
+        ]);
+
+        $listeningParty = ListeningParty::create([
+            'episode_id' => $episode->id,
+            'name' => $this->name,
+            'start_time' => $this->startTime,
+        ]);
     }
 
     public function with(): array
