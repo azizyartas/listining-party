@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->boolean('is_active')->default(true);
             $table->dateTime('start_time');
-            $table->dateTime('end_time');
+            $table->dateTime('end_time')->nullable();
             $table->timestamps();
         });
     }
