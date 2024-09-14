@@ -75,22 +75,47 @@ new class extends Component {
     </div>
     {{-- Bottom Half: Existing Listening Parties --}}
     <div class="my-20">
-        @if($listeningParties->isEmpty())
-            <div>No awwdio listening parties started yet... 🥲</div>
-        @else
-            @foreach($listeningParties as $listeningParty)
-                <div wire:key="{{ $listeningParty->id }}">
-                    <x-avatar
-                        src="{{ $listeningParty->episode->podcast->artwork_url }}"
-                        size="xl"
-                        rounded="full"
-                    />
-                    <p>{{ $listeningParty->name }}</p>
-                    <p>{{ $listeningParty->episode->title }}</p>
-                    <p>{{ $listeningParty->episode->podcast->title }}</p>
-                    <p>{{ $listeningParty->start_time }}</p>
-                </div>
-            @endforeach
-        @endif
+        <div class="max-w-lg mx-auto">
+            <h3 class="font-serif mb-8 font-bold">Ongoing Listening Parties</h3>
+            <div class="bg-white rounded-lg shadow-lg">
+                @if($listeningParties->isEmpty())
+                    <div>No awwdio listening parties started yet... 🥲</div>
+                @else
+                    @foreach($listeningParties as $listeningParty)
+                        <div wire:key="{{ $listeningParty->id }}">
+                            <a href="{{ route('parties.show', $listeningParty) }}" class="block">
+                                <div
+                                    class="flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-50 transition-all duration-150 ease-in-out">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <x-avatar
+                                                src="{{ $listeningParty->episode->podcast->artwork_url }}"
+                                                size="xl"
+                                                rounded="small"
+                                                alt="Podcast Artwork"
+                                            />
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="text-sm font-medium text-gray-900 truncate">
+                                                {{ $listeningParty->name }}
+                                            </div>
+                                            <div class="text-sm text-gray-600 truncate">
+                                                {{ $listeningParty->episode->title }}
+                                            </div>
+                                            <div class="text-xs text-gray-400 truncate">
+                                                {{ $listeningParty->episode->podcast->title }}
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                <p>{{ $listeningParty->start_time }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+        </div>
     </div>
 </div>
