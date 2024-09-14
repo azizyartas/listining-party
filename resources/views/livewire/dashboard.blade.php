@@ -105,8 +105,43 @@ new class extends Component {
                                             <div class="text-xs text-gray-400 truncate">
                                                 {{ $listeningParty->episode->podcast->title }}
                                             </div>
-                                            <div class="text-xs text-gray-500 mt-1">
-                                                <p>{{ $listeningParty->start_time }}</p>
+                                            <div class="text-xs text-gray-500 mt-1"
+                                                 x-data="{
+                                                    startTime: '{{ $listeningParty->start_time->toIso8601String() }}',
+                                                    countdownText: '',
+                                                    isLive: {{ $listeningParty->start_time->isPast() && $listeningParty->is_active ? 'true' : 'false' }},
+                                                    updateCountdown() {
+                                                        const start = new Date(this.startTime).getTime();
+                                                        const now = new Date().getTime();
+                                                        const distance = start - now;
+
+                                                        if (distance < 0) {
+                                                            this.countdownText = 'Started';
+                                                            this.isLive = true;
+                                                        } else {
+                                                            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                                            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                                            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                                            this.countdownText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                                                            this.isLive = false; // Make sure isLive is false if the countdown is still running
+                                                        }
+                                                    }
+                                                }"
+                                                 x-init="updateCountdown();
+                                                 setInterval(() => updateCountdown(), 1000);"
+                                            >
+                                                <div x-show="isLive">
+                                                    <x-badge flat rose label="LIVE">
+                                                        <x-slot name="prepend" class="relative flex items-center w-2 h-2">
+                                                            <span class="absolute inline-flex w-full h-full rounded-full opacity-75 bg-rose-500 animate-ping"></span>
+                                                            <span class="relative inline-flex w-2 h-2 rounded-full bg-rose-500"></span>
+                                                        </x-slot>
+                                                    </x-badge>
+                                                </div>
+                                                <div x-show="!isLive">
+                                                    Starts in: <span x-text="countdownText"></span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
