@@ -21,6 +21,8 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                serif: ['Aleo', 'serif'],
+                cursive: ['Annie Use Your Telescope', 'cursive'],
             },
 
             colors: {
