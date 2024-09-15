@@ -38,7 +38,7 @@ new class extends Component {
     public function with(): array
     {
         return [
-            'listeningParties' => ListeningParty::where('is_active', true)->orderBy('start_time')->with('episode.podcast')->get(),
+            'listeningParties' => ListeningParty::where('is_active', true)->whereNotNull('end_time')->orderBy('start_time')->with('episode.podcast')->get(),
         ];
     }
 }; ?>
@@ -79,7 +79,7 @@ new class extends Component {
             <h3 class="font-serif mb-4 font-bold text-[0.9rem]">Ongoing Listening Parties</h3>
             <div class="bg-white rounded-lg shadow-lg">
                 @if($listeningParties->isEmpty())
-                    <div>No awwdio listening parties started yet... 🥲</div>
+                    <div class="flex items-center justify-center p-6 font-serif text-sm">No awwdio listening parties started yet... 🥲</div>
                 @else
                     @foreach($listeningParties as $listeningParty)
                         <div wire:key="{{ $listeningParty->id }}">
