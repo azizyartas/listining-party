@@ -49,11 +49,39 @@ class ProcessPodcastUrl implements ShouldQueue
         $episodeMediaUrl = (string) $latestEpisode->enclosure['url'];
 
         $namespaces = $xml->getNamespaces(true);
-        $itunesNamespace = $namespaces['itunes'];
+        $itunesNamespace = $namespaces['itunes'] ?? null;
 
-        $episodeLength = $latestEpisode->children($itunesNamespace)->duration;
+        $episodeLength = null;
 
-        $interval = CarbonInterval::createFromFormat('H:i:s', $episodeLength);
+        if ($itunesNamespace) {
+            $episodeLength = (string) $latestEpisode->children($itunesNamespace)->length;
+        }
+
+        if (empty($episodeLength)) {
+            $fileSize = (int) $latestEpisode->enclosure['length'];
+            $bitrate = 128000; // Assume 128kbps as standard podcast bitrate
+            $durationInSeconds = ceil($fileSize*8 / $bitrate);
+            $episodeLength = (string) $durationInSeconds;
+        }
+
+        try {
+            if (str_contains($episodeLength, ':')) {
+                $parts = explode(':', $episodeLength);
+                if (count($parts) == 2) {
+                    $interval = CarbonInterval::createFromFormat('i:s', $episodeLength);
+                } elseif (count($parts) == 3) {
+                    $interval = CarbonInterval::createFromFormat('H:i:s', $episodeLength);
+                } else {
+                    throw new \Exception('Unexpected duration format');
+                }
+            } else {
+                $interval = CarbonInterval::seconds((int) $episodeLength);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error parsing episode duration: ' . $e->getMessage());
+            $interval = CarbonInterval::hour();
+        }
+
         $endTime = $this->listeningParty->start_time->add($interval);
 
         $podcast = Podcast::updateOrCreate([

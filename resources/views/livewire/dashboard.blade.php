@@ -76,7 +76,7 @@ new class extends Component {
     {{-- Bottom Half: Existing Listening Parties --}}
     <div class="my-20">
         <div class="max-w-lg mx-auto">
-            <h3 class="font-serif mb-8 font-bold">Ongoing Listening Parties</h3>
+            <h3 class="font-serif mb-4 font-bold text-[0.9rem]">Ongoing Listening Parties</h3>
             <div class="bg-white rounded-lg shadow-lg">
                 @if($listeningParties->isEmpty())
                     <div>No awwdio listening parties started yet... 🥲</div>
@@ -99,7 +99,7 @@ new class extends Component {
                                             <div class="text-sm font-medium text-gray-900 truncate">
                                                 {{ $listeningParty->name }}
                                             </div>
-                                            <div class="text-sm text-gray-600 truncate">
+                                            <div class="text-sm text-gray-600 truncate max-w-xs">
                                                 {{ $listeningParty->episode->title }}
                                             </div>
                                             <div class="text-xs text-gray-400 truncate">
@@ -124,7 +124,7 @@ new class extends Component {
                                                             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                                                             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
                                                             this.countdownText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-                                                            this.isLive = false; // Make sure isLive is false if the countdown is still running
+                                                            this.isLive = false;
                                                         }
                                                     }
                                                 }"
@@ -145,8 +145,12 @@ new class extends Component {
                                             </div>
                                         </div>
                                     </div>
+                                    <div>
+                                        <x-button flat xs class="w-20">Join</x-button>
+                                    </div>
                                 </div>
                             </a>
+
                         </div>
                     @endforeach
                 @endif
