@@ -107,24 +107,21 @@ new class extends Component {
                                             </div>
                                             <div class="text-xs text-gray-500 mt-1"
                                                  x-data="{
-                                                    startTime: '{{ $listeningParty->start_time->toIso8601String() }}',
+                                                    startTime: {{ $listeningParty->start_time->timestamp }},
                                                     countdownText: '',
                                                     isLive: {{ $listeningParty->start_time->isPast() && $listeningParty->is_active ? 'true' : 'false' }},
                                                     updateCountdown() {
-                                                        const start = new Date(this.startTime).getTime();
-                                                        const now = new Date().getTime();
-                                                        const distance = start - now;
-
-                                                        if (distance < 0) {
-                                                            this.countdownText = 'Started';
+                                                        const now = Math.floor(Date.now() / 1000);
+                                                        const timeUntilStart = this.startTime - now;
+                                                        if (timeUntilStart <= 0) {
+                                                            this.countdownText = 'Live';
                                                             this.isLive = true;
                                                         } else {
-                                                            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                                                            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                                                            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                                                            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                                            const days = Math.floor(timeUntilStart / 86400);
+                                                            const hours = Math.floor((timeUntilStart % 86400) / 3600);
+                                                            const minutes = Math.floor((timeUntilStart % 3600) / 60);
+                                                            const seconds = timeUntilStart % 60;
                                                             this.countdownText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-                                                            this.isLive = false;
                                                         }
                                                     }
                                                 }"
